@@ -91,12 +91,12 @@ function hideQuiz() {
     document.getElementById("answer").style.display = 'none';
 }
 function showQuiz() {
-    document.getElementById("prev").style.display = 'block';
-    document.getElementById("next").style.display = 'block';
-    document.getElementById("stop").style.display = 'block';
-    document.getElementById("footer").style.display = 'block';
-    document.getElementById("timer").style.display = 'block';
-    document.getElementById("answer").style.display = 'block';
+    document.getElementById("prev").style.display = 'inline';
+    document.getElementById("next").style.display = 'inline';
+    document.getElementById("stop").style.display = 'inline';
+    document.getElementById("footer").style.display = 'inline';
+    document.getElementById("timer").style.display = 'inline';
+    document.getElementById("answer").style.display = 'inline';
 }
 function endQuiz() {
     clearInterval(interval);
@@ -116,6 +116,8 @@ function initQuiz() {
         answers[i] = "";
         times[i] = 0;
     }
+    showQuiz();
+    document.getElementById("start").style.display = 'none';
     showQuestion(0);
     var answerElement = document.getElementById("answer");
     var prevButton = document.getElementById("prev");
@@ -134,6 +136,10 @@ function loadWindow() {
     var introElement = document.getElementById("intro");
     introElement.innerHTML = quiz.intro;
     var descriptionElement = document.getElementById("question");
-    descriptionElement.innerHTML = "Liczba pytań : " + maxNum + ".";
+    descriptionElement.innerHTML = "Liczba pytań : " + maxNum + ".<br>Kary czasowe : ";
+    for (var i = 0; i < maxNum; i++) {
+        descriptionElement.innerHTML += quiz.questions[i].penalty + " ";
+    }
+    document.getElementById("start").onclick = initQuiz;
 }
 window.onload = loadWindow;
