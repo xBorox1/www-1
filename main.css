@@ -1,0 +1,20 @@
+body {
+	background-color: blue;
+	text-align: center;
+}
+
+#intro {
+	font-size: 30px;
+	text-align: center;
+	border: 2px solid black;
+}
+
+span.correct {
+	color: lime;
+	font-weight: bold;
+}
+
+span.incorrect {
+	color: red;
+	font-weight: bold;
+}
