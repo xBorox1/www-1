@@ -111,27 +111,9 @@ function getResult(id) {
 	return report;
 }
 
-function hideQuiz() {
-	document.getElementById("prev").style.display = 'none';
-	document.getElementById("next").style.display = 'none';
-	document.getElementById("stop").style.display = 'none';
-	document.getElementById("footer").style.display = 'none';
-	document.getElementById("timer").style.display = 'none';
-	document.getElementById("answer").style.display = 'none';
-}
-
-function showQuiz() {
-	document.getElementById("prev").style.display = 'inline';
-	document.getElementById("next").style.display = 'inline';
-	document.getElementById("stop").style.display = 'inline';
-	document.getElementById("footer").style.display = 'inline';
-	document.getElementById("timer").style.display = 'inline';
-	document.getElementById("answer").style.display = 'inline';
-}
-
 function endQuiz() {
 	clearInterval(interval);
-	hideQuiz();
+	document.getElementById("quiz").style.display = 'none';
 
 	let report = "Wyniki : <br>";
 	for (let i = 0; i < maxNum; i++) {
@@ -143,18 +125,49 @@ function endQuiz() {
 	report += "Wynik końcowy : " + result + "s."
 
 	document.getElementById("question").innerHTML = report;
+	document.getElementById("save").style.display = 'inline';
+	document.getElementById("stats").style.display = 'inline';
 }
 
 function initQuiz() {
+	curNum = 0;
 	for (let i = 0; i < maxNum; i++) {
 		answers[i] = "";
 		times[i] = 0;
 	}
 
-	showQuiz();
+	document.getElementById("quiz").style.display = 'inline';
 	document.getElementById("start").style.display = 'none';
 	showQuestion(0);
 
+	const prevButton = document.getElementById("prev");
+	const nextButton = document.getElementById("next");
+	const stopButton = document.getElementById("stop");
+
+	prevButton.disabled = true;
+	stopButton.disabled = true;
+	nextButton.disabled = false;
+	console.log("No jestem");
+
+	curTime = 0;
+	const timerElement = document.getElementById("timer");
+	timerElement.innerHTML = "Minęło " + curTime + " sekund.";
+	interval = setInterval(changeTimer, 1000);
+}
+
+function everyLoad() {
+	document.getElementById("quiz").style.display = 'none';
+	document.getElementById("stats").style.display = 'none';
+
+	const descriptionElement = document.getElementById("question");
+	descriptionElement.innerHTML = "Liczba pytań : " + maxNum + ".<br>Kary czasowe : ";
+	for(let i = 0; i < maxNum; i++) {
+		descriptionElement.innerHTML += quiz.questions[i].penalty + " ";
+	}
+}
+
+function loadWindow() {
+	everyLoad();
 	const answerElement = document.getElementById("answer");
 	const prevButton = document.getElementById("prev");
 	const nextButton = document.getElementById("next");
@@ -164,24 +177,26 @@ function initQuiz() {
 	prevButton.onclick = prevQuestion;
 	nextButton.onclick = nextQuestion;
 	stopButton.onclick = endQuiz;
-	prevButton.disabled = true;
-	stopButton.disabled = true;
 
-	interval = setInterval(changeTimer, 1000);
-}
-
-function loadWindow() {
-	hideQuiz();
 	const introElement = document.getElementById("intro");
 	introElement.innerHTML = quiz.intro;
 
-	const descriptionElement = document.getElementById("question");
-	descriptionElement.innerHTML = "Liczba pytań : " + maxNum + ".<br>Kary czasowe : ";
-	for(let i = 0; i < maxNum; i++) {
-		descriptionElement.innerHTML += quiz.questions[i].penalty + " ";
-	}
-
 	document.getElementById("start").onclick = initQuiz;
+	document.getElementById("cancel").onclick = cancelQuiz;
+	document.getElementById("save").onclick = saveResult;
+}
+
+function cancelQuiz() {
+	clearInterval(interval);
+	document.getElementById("start").style.display = 'inline';
+	everyLoad();
+}
+
+function saveResult() {
+	document.getElementById("start").style.display = 'inline';
+	window.localStorage.setItem('result', "1");
+	console.log(window.localStorage.getItem('result'));
+	everyLoad();
 }
 
 window.onload = loadWindow;

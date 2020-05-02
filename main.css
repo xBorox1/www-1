@@ -1,12 +1,12 @@
 body {
-	background-color: blue;
+	background-color: grey;
 	text-align: center;
 }
 
 #intro {
 	font-size: 30px;
 	text-align: center;
-	border: 2px solid black;
+	border-bottom: 2px solid white;
 }
 
 span.correct {
