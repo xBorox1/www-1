@@ -91,7 +91,8 @@ function changeAnswer() {
 }
 
 function changeTimer() {
-	curTime++;
+	curTime += 0.1;
+	curTime = Math.round(curTime * 10) / 10;
 	const timerElement = document.getElementById("timer");
 	timerElement.innerHTML = "Minęło " + curTime + " sekund.";
 }
@@ -104,16 +105,20 @@ function getResult(id) {
 	}
 	else {
 		report += '<span class="incorrect"> niepoprawna </span>, prawidłowa : ' + quiz.questions[id].answer;
+		report += ', kara : ' + quiz.questions[id].penalty + "s";
 		times[id] += quiz.questions[id].penalty;
 	}
+	times[id] = Math.round(times[id] * 10) / 10;
 	report += ", czas : " + times[id];
 	report += "s.<br>";
 	return report;
 }
 
 function endQuiz() {
+	actTime(curNum);
 	clearInterval(interval);
 	document.getElementById("quiz").style.display = 'none';
+	document.getElementById("chbox").checked = false;
 
 	let report = "Wyniki : <br>";
 	for (let i = 0; i < maxNum; i++) {
@@ -122,6 +127,7 @@ function endQuiz() {
 
 	result = 0;
 	for (let i = 0; i < maxNum; i++) result += times[i];
+	result = Math.round(10 * result) / 10;
 	report += "Wynik końcowy : " + result + "s."
 
 	document.getElementById("question").innerHTML = report;
@@ -138,6 +144,7 @@ function initQuiz() {
 
 	document.getElementById("quiz").style.display = 'inline';
 	document.getElementById("start").style.display = 'none';
+	document.getElementById("storage").style.display = 'none';
 	showQuestion(0);
 
 	const prevButton = document.getElementById("prev");
@@ -147,22 +154,44 @@ function initQuiz() {
 	prevButton.disabled = true;
 	stopButton.disabled = true;
 	nextButton.disabled = false;
-	console.log("No jestem");
 
 	curTime = 0;
+	lastTime = 0;
 	const timerElement = document.getElementById("timer");
 	timerElement.innerHTML = "Minęło " + curTime + " sekund.";
-	interval = setInterval(changeTimer, 1000);
+	interval = setInterval(changeTimer, 100);
+}
+
+function getResultFromString(str) {
+	let i = 0;
+	while(str[i] !== 's') i++;
+	return Number(str.substring(0, i));
 }
 
 function everyLoad() {
 	document.getElementById("quiz").style.display = 'none';
 	document.getElementById("stats").style.display = 'none';
+	document.getElementById("storage").style.display = 'inline';
 
 	const descriptionElement = document.getElementById("question");
 	descriptionElement.innerHTML = "Liczba pytań : " + maxNum + ".<br>Kary czasowe : ";
 	for(let i = 0; i < maxNum; i++) {
 		descriptionElement.innerHTML += quiz.questions[i].penalty + " ";
+	}
+
+	let results = new Array<[number, number]>();
+
+	for(let i=0; i < localStorage.length; i++) {
+		const key = localStorage.key(i);
+		results[i] = [getResultFromString(localStorage[key]), key];
+	}
+	results = results.sort((x, y) => x[0] - y[0]);
+
+	const listElement = document.getElementById("storage-list");
+	listElement.innerHTML = "";
+
+	for(let i=0; i < Math.min(localStorage.length, 5); i++) {
+		listElement.innerHTML += "<li> " + localStorage[results[i][1]] + "</li>";
 	}
 }
 
@@ -194,8 +223,16 @@ function cancelQuiz() {
 
 function saveResult() {
 	document.getElementById("start").style.display = 'inline';
-	window.localStorage.setItem('result', "1");
-	console.log(window.localStorage.getItem('result'));
+
+	let saved = String(result) + "s";
+	if (document.getElementById("chbox").checked) {
+		saved += " : ";
+		for (let i = 0; i < maxNum; i++) {
+			saved += String((i + 1) + " - " + String(times[i]) + "s, ");
+		}
+	}
+	localStorage.setItem(String(localStorage.length), saved);
+
 	everyLoad();
 }
 
