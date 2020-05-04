@@ -190,7 +190,7 @@ function everyLoad() {
 	const listElement = document.getElementById("storage-list");
 	listElement.innerHTML = "";
 
-	for(let i=0; i < Math.min(localStorage.length, 5); i++) {
+	for(let i=0; i < Math.min(results.length, 5); i++) {
 		listElement.innerHTML += "<li> " + localStorage[results[i][1]] + "</li>";
 	}
 }

@@ -149,7 +149,7 @@ function everyLoad() {
     results = results.sort(function (x, y) { return x[0] - y[0]; });
     var listElement = document.getElementById("storage-list");
     listElement.innerHTML = "";
-    for (var i = 0; i < Math.min(localStorage.length, 5); i++) {
+    for (var i = 0; i < Math.min(results.length, 5); i++) {
         listElement.innerHTML += "<li> " + localStorage[results[i][1]] + "</li>";
     }
 }
