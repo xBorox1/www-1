@@ -164,7 +164,7 @@ function initQuiz() {
 
 function getResultFromString(str) {
 	let i = 0;
-	while(str[i] !== 's') i++;
+	while (str[i] !== 's') i++;
 	return Number(str.substring(0, i));
 }
 
@@ -182,8 +182,8 @@ function everyLoad() {
 	let results = new Array<[number, number]>();
 
 	for(let i=0; i < localStorage.length; i++) {
-		const key = localStorage.key(i);
-		results[i] = [getResultFromString(localStorage[key]), key];
+		if (localStorage.getItem("res" + i) === null) break;
+		results[i] = [getResultFromString(localStorage.getItem("res" + i)), "res" + i];
 	}
 	results = results.sort((x, y) => x[0] - y[0]);
 
@@ -231,9 +231,12 @@ function saveResult() {
 			saved += String((i + 1) + " - " + String(times[i]) + "s, ");
 		}
 	}
-	localStorage.setItem(String(localStorage.length), saved);
+
+	let ind = 0;
+	while (localStorage.getItem("res" + ind) !== null) ind++;
+	localStorage.setItem("res" + ind, saved);
 
 	everyLoad();
 }
 
-window.onload = loadWindow;
+document.addEventListener("DOMContentLoaded", loadWindow);

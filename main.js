@@ -142,8 +142,9 @@ function everyLoad() {
     }
     var results = new Array();
     for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        results[i] = [getResultFromString(localStorage[key]), key];
+        if (localStorage.getItem("res" + i) === null)
+            break;
+        results[i] = [getResultFromString(localStorage.getItem("res" + i)), "res" + i];
     }
     results = results.sort(function (x, y) { return x[0] - y[0]; });
     var listElement = document.getElementById("storage-list");
@@ -182,7 +183,10 @@ function saveResult() {
             saved += String((i + 1) + " - " + String(times[i]) + "s, ");
         }
     }
-    localStorage.setItem(String(localStorage.length), saved);
+    var ind = 0;
+    while (localStorage.getItem("res" + ind) !== null)
+        ind++;
+    localStorage.setItem("res" + ind, saved);
     everyLoad();
 }
-window.onload = loadWindow;
+document.addEventListener("DOMContentLoaded", loadWindow);
